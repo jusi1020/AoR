@@ -106,11 +106,7 @@ def run_reconstruction(
 
     # ── PLY 내보내기 ─────────────────────────────────────────────────────────
     _progress("포인트 클라우드 저장 중...", 74)
-    # format은 .ply 확장자로 자동 감지
-    chunk.exportPointCloud(
-        path=ply_path,
-        save_colors=True,
-    )
+    chunk.exportPointCloud(path=ply_path)
 
     # ── Mesh ─────────────────────────────────────────────────────────────────
     _progress("메시 생성 중 (4/4)...", 76)
