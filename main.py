@@ -245,8 +245,9 @@ class AoRApp(ctk.CTk):
             self.after(0, _enable)
 
         except Exception as e:
-            self._update_status(f"오류: {e}", 0)
-            self.after(0, lambda: messagebox.showerror("재구성 오류", str(e)))
+            msg = str(e)
+            self._update_status(f"오류: {msg}", 0)
+            self.after(0, lambda m=msg: messagebox.showerror("재구성 오류", m))
         finally:
             self.after(0, lambda: self._recon_btn.configure(state="normal"))
 
@@ -267,7 +268,8 @@ class AoRApp(ctk.CTk):
                 width=1024, height=768,
             )
         except Exception as e:
-            self.after(0, lambda: messagebox.showerror("시각화 오류", str(e)))
+            msg = str(e)
+            self.after(0, lambda m=msg: messagebox.showerror("시각화 오류", m))
 
     # ── STEP 2: 분석 ─────────────────────────────────────────────────────────
 
@@ -309,8 +311,9 @@ class AoRApp(ctk.CTk):
             self._log(text)
 
         except Exception as e:
-            self._update_status(f"오류: {e}", 0)
-            self.after(0, lambda: messagebox.showerror("분석 오류", str(e)))
+            msg = str(e)
+            self._update_status(f"오류: {msg}", 0)
+            self.after(0, lambda m=msg: messagebox.showerror("분석 오류", m))
         finally:
             self.after(0, lambda: self._analyze_btn.configure(state="normal"))
 
