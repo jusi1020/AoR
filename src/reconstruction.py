@@ -106,27 +106,31 @@ def run_reconstruction(
 
     # ── PLY 내보내기 ─────────────────────────────────────────────────────────
     _progress("포인트 클라우드 저장 중...", 74)
-    chunk.exportPointCloud(path=ply_path)
+    chunk.exportPointCloud(
+        path=ply_path,
+        save_point_color=True,
+        save_point_confidence=False,
+    )
 
     # ── Mesh ─────────────────────────────────────────────────────────────────
     _progress("메시 생성 중 (4/4)...", 76)
     chunk.buildModel(
-        surface_type=Metashape.SurfaceType.HeightField,
+        surface_type=Metashape.SurfaceType.HeightField,  # 토양 더미에 적합
         face_count=Metashape.FaceCount.MediumFaceCount,
     )
     chunk.buildTexture(
-        blending_mode=Metashape.BlendingMode.Mosaic,
-        texture_size=4096,
+        texture_size=4096,   # blending_mode 기본값 NaturalBlending 사용
     )
     _progress("메시 완료", 92)
 
-    # ── OBJ 내보내기 ─────────────────────────────────────────────────────────
+    # ── OBJ 내보내기 (format은 .obj 확장자로 자동 감지) ──────────────────────
     _progress("메시 저장 중...", 94)
-    # format은 .obj 확장자로 자동 감지
     chunk.exportModel(
         path=obj_path,
         save_texture=True,
         save_uv=True,
+        save_normals=True,
+        save_colors=True,
     )
 
     _progress("재구성 완료!", 100)
