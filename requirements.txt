@@ -1,0 +1,14 @@
+# Metashape Python API (로컬 whl에서 설치)
+# pip install "C:\Users\sjisu\Downloads\metashape-2.3.0-cp39.cp310.cp311.cp312.cp313-none-win_amd64.whl"
+
+# 3D 분석
+open3d>=0.18.0
+numpy>=1.24.0
+scipy>=1.11.0
+
+# GUI
+customtkinter>=5.2.0
+Pillow>=10.0.0
+
+# 리포트
+matplotlib>=3.7.0
