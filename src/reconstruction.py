@@ -106,9 +106,9 @@ def run_reconstruction(
 
     # ── PLY 내보내기 ─────────────────────────────────────────────────────────
     _progress("포인트 클라우드 저장 중...", 74)
+    # format은 .ply 확장자로 자동 감지
     chunk.exportPointCloud(
         path=ply_path,
-        format=Metashape.PointCloudFormat.PLY,
         save_colors=True,
     )
 
@@ -126,9 +126,9 @@ def run_reconstruction(
 
     # ── OBJ 내보내기 ─────────────────────────────────────────────────────────
     _progress("메시 저장 중...", 94)
+    # format은 .obj 확장자로 자동 감지
     chunk.exportModel(
         path=obj_path,
-        format=Metashape.ModelFormat.OBJ,
         save_texture=True,
         save_uv=True,
     )
