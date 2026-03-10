@@ -45,15 +45,24 @@ def run_reconstruction(
         if not Metashape.License().valid:
             raise RuntimeError("Metashape 라이선스 활성화 실패")
 
-    # ── Metashape 품질 매핑 ──────────────────────────────────────────────────
-    quality_map = {
-        "lowest":  Metashape.LowestAccuracy,
-        "low":     Metashape.LowAccuracy,
-        "medium":  Metashape.MediumAccuracy,
-        "high":    Metashape.HighAccuracy,
-        "highest": Metashape.HighestAccuracy,
-    }
-    acc = quality_map.get(quality, Metashape.MediumAccuracy)
+    # ── Metashape 2.x 품질 매핑 (downscale 정수값) ──────────────────────────
+    # matchPhotos downscale: 0=highest, 1=high, 2=medium, 4=low, 8=lowest
+    # buildDepthMaps downscale: 1=ultra, 2=high, 4=medium, 8=low, 16=lowest
+    match_downscale = {
+        "highest": 0,
+        "high":    1,
+        "medium":  2,
+        "low":     4,
+        "lowest":  8,
+    }.get(quality, 2)
+
+    depth_downscale = {
+        "highest": 1,
+        "high":    2,
+        "medium":  4,
+        "low":     8,
+        "lowest":  16,
+    }.get(quality, 4)
 
     # ── 프로젝트 생성 ────────────────────────────────────────────────────────
     _progress("프로젝트 생성 중...", 5)
@@ -76,7 +85,7 @@ def run_reconstruction(
     # ── 사진 정렬 (Sparse Point Cloud) ───────────────────────────────────────
     _progress("사진 정렬 중 (1/4)...", 15)
     chunk.matchPhotos(
-        accuracy=acc,
+        downscale=match_downscale,
         generic_preselection=True,
         reference_preselection=False,
     )
@@ -86,36 +95,32 @@ def run_reconstruction(
     # ── Depth Maps ───────────────────────────────────────────────────────────
     _progress("깊이 맵 생성 중 (2/4)...", 38)
     chunk.buildDepthMaps(
-        quality=acc,
-        filter_mode=Metashape.MildFiltering,
+        downscale=depth_downscale,
+        filter_mode=Metashape.FilterMode.Mild,
     )
     _progress("깊이 맵 완료", 55)
 
     # ── Dense Point Cloud ────────────────────────────────────────────────────
     _progress("포인트 클라우드 생성 중 (3/4)...", 58)
-    chunk.buildPointCloud(
-        point_confidence=True,
-    )
+    chunk.buildPointCloud()
     _progress("포인트 클라우드 완료", 72)
 
     # ── PLY 내보내기 ─────────────────────────────────────────────────────────
     _progress("포인트 클라우드 저장 중...", 74)
     chunk.exportPointCloud(
         path=ply_path,
-        format=Metashape.PointCloudFormatPLY,
+        format=Metashape.PointCloudFormat.PLY,
         save_colors=True,
-        save_confidence=False,
     )
 
     # ── Mesh ─────────────────────────────────────────────────────────────────
     _progress("메시 생성 중 (4/4)...", 76)
     chunk.buildModel(
-        surface_type=Metashape.HeightField,   # 토양 더미에 적합
-        interpolation=Metashape.EnabledInterpolation,
-        face_count=Metashape.MediumFaceCount,
+        surface_type=Metashape.SurfaceType.HeightField,
+        face_count=Metashape.FaceCount.MediumFaceCount,
     )
     chunk.buildTexture(
-        blending_mode=Metashape.MosaicBlending,
+        blending_mode=Metashape.BlendingMode.Mosaic,
         texture_size=4096,
     )
     _progress("메시 완료", 92)
@@ -124,7 +129,7 @@ def run_reconstruction(
     _progress("메시 저장 중...", 94)
     chunk.exportModel(
         path=obj_path,
-        format=Metashape.ModelFormatOBJ,
+        format=Metashape.ModelFormat.OBJ,
         save_texture=True,
         save_uv=True,
     )
