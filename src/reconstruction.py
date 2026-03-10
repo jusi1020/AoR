@@ -94,9 +94,10 @@ def run_reconstruction(
 
     # ── Depth Maps ───────────────────────────────────────────────────────────
     _progress("깊이 맵 생성 중 (2/4)...", 38)
+    # filter_mode: 1=Mild, 2=Moderate, 3=Aggressive (정수로 직접 지정)
     chunk.buildDepthMaps(
         downscale=depth_downscale,
-        filter_mode=Metashape.FilterMode.Mild,
+        filter_mode=1,
     )
     _progress("깊이 맵 완료", 55)
 
