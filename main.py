@@ -299,14 +299,16 @@ class AoRApp(ctk.CTk):
 
             text = (
                 f"{'='*46}\n"
-                f"  안식각 (α)   : {result.angle_deg:.2f}°\n"
+                f"  평균 안식각 (ᾱ)  : {result.mean_angle_deg:.2f}°\n"
+                f"  표준편차 (σ)     :  {result.std_angle_deg:.2f}°\n"
+                f"  범위             : {result.min_angle_deg:.1f}° ~ {result.max_angle_deg:.1f}°\n"
+                f"  유효 wedge       : {result.n_valid_wedges} / {len(result.wedge_results)}\n"
                 f"{'='*46}\n"
-                f"  더미 높이    : {result.pile_height:.4f}\n"
-                f"  더미 반지름  : {result.pile_radius:.4f}\n"
-                f"  tan(α) = h/r : {result.pile_height / max(result.pile_radius, 1e-9):.4f}\n"
-                f"  분석 포인트  : {result.n_points_pile:,} / {result.n_points_total:,}\n"
+                f"  더미 높이        : {result.pile_height:.4f}\n"
+                f"  더미 반지름      : {result.pile_radius:.4f}\n"
+                f"  분석 포인트      : {result.n_points_pile:,} / {result.n_points_total:,}\n"
                 f"{'='*46}\n"
-                f"  결과 이미지  : {img_path}\n"
+                f"  결과 이미지      : {img_path}\n"
             )
             self._log(text)
 
