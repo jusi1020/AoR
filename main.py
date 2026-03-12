@@ -286,6 +286,9 @@ class AoRApp(ctk.CTk):
             from src.analysis      import analyze_angle_of_repose
             from src.visualization import save_result_plot
 
+            output_dir = self._output_dir.get()
+            Path(output_dir).mkdir(parents=True, exist_ok=True)
+
             self._update_status("포인트 클라우드 분석 중...", 20)
             result = analyze_angle_of_repose(
                 self._ply_path,
@@ -293,8 +296,6 @@ class AoRApp(ctk.CTk):
             )
 
             self._update_status("결과 이미지 저장 중...", 85)
-            output_dir = self._output_dir.get()
-            Path(output_dir).mkdir(parents=True, exist_ok=True)
             img_path = save_result_plot(result, output_dir)
 
             self._analysis_result = result
