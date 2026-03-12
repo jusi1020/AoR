@@ -287,7 +287,10 @@ class AoRApp(ctk.CTk):
             from src.visualization import save_result_plot
 
             self._update_status("포인트 클라우드 분석 중...", 20)
-            result = analyze_angle_of_repose(self._ply_path)
+            result = analyze_angle_of_repose(
+                self._ply_path,
+                output_dir=output_dir,
+            )
 
             self._update_status("결과 이미지 저장 중...", 85)
             output_dir = self._output_dir.get()
@@ -295,6 +298,17 @@ class AoRApp(ctk.CTk):
             img_path = save_result_plot(result, output_dir)
 
             self._analysis_result = result
+
+            # 배경 제거된 PLY가 저장됐으면 뷰어를 그걸로 교체
+            if result.cleaned_ply_path:
+                def _update_ply(p=result.cleaned_ply_path):
+                    self._ply_path = p
+                    self._ply_label.configure(
+                        text="pile_cleaned.ply  ✓ 배경 제거됨",
+                        text_color="#66ff99",
+                    )
+                self.after(0, _update_ply)
+
             self._update_status("분석 완료!", 100)
 
             text = (

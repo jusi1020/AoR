@@ -3,11 +3,26 @@
 """
 from __future__ import annotations
 
+import platform
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import open3d as o3d
 from pathlib import Path
+
+# ── 한글 폰트 설정 ────────────────────────────────────────────────────────────
+_sys = platform.system()
+if _sys == "Windows":
+    matplotlib.rc("font", family="Malgun Gothic")
+elif _sys == "Darwin":
+    matplotlib.rc("font", family="AppleGothic")
+else:
+    try:
+        matplotlib.rc("font", family="NanumGothic")
+    except Exception:
+        pass
+matplotlib.rcParams["axes.unicode_minus"] = False  # 마이너스 기호 깨짐 방지
 
 from .analysis import AngleOfReposeResult
 

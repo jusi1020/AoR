@@ -48,6 +48,9 @@ class AngleOfReposeResult:
     n_points_total: int
     n_points_pile: int
 
+    # 배경 제거된 PLY 경로 (저장된 경우)
+    cleaned_ply_path: Optional[str] = None
+
     @property
     def angle_deg(self) -> float:
         """하위 호환: 평균 안식각 반환"""
@@ -287,14 +290,23 @@ def analyze_angle_of_repose(
     n_bins: int = 20,
     lambda1: float = 0.15,
     lambda2: float = 0.85,
+    output_dir: Optional[str] = None,
 ) -> AngleOfReposeResult:
     """전체 파이프라인: PLY → 360° 안식각 분석"""
+    from pathlib import Path
+
     pcd     = load_and_preprocess(ply_path, voxel_size)
     n_total = len(pcd.points)
 
     plane_model, ground_pcd, pile_raw = detect_ground_plane(pcd)
     pile_pcd = extract_pile_cluster(pile_raw, plane_model)
     n_pile   = len(pile_pcd.points)
+
+    # 배경 제거된 PLY 저장
+    cleaned_ply_path: Optional[str] = None
+    if output_dir is not None:
+        cleaned_ply_path = str(Path(output_dir) / "pile_cleaned.ply")
+        o3d.io.write_point_cloud(cleaned_ply_path, pile_pcd)
 
     wedge_results, apex, base_center, pile_height, pile_radius = analyze_wedges(
         pile_pcd, plane_model,
@@ -309,17 +321,18 @@ def analyze_angle_of_repose(
         raise ValueError("유효한 wedge가 없습니다. 포인트 클라우드를 확인해주세요.")
 
     return AngleOfReposeResult(
-        wedge_results  = wedge_results,
-        mean_angle_deg = float(np.mean(valid_angles)),
-        std_angle_deg  = float(np.std(valid_angles)),
-        min_angle_deg  = float(np.min(valid_angles)),
-        max_angle_deg  = float(np.max(valid_angles)),
-        n_valid_wedges = int(len(valid_angles)),
-        pile_height    = round(float(pile_height), 4),
-        pile_radius    = round(float(pile_radius), 4),
-        apex           = apex,
-        base_center    = base_center,
-        ground_plane   = plane_model,
-        n_points_total = n_total,
-        n_points_pile  = n_pile,
+        wedge_results    = wedge_results,
+        mean_angle_deg   = float(np.mean(valid_angles)),
+        std_angle_deg    = float(np.std(valid_angles)),
+        min_angle_deg    = float(np.min(valid_angles)),
+        max_angle_deg    = float(np.max(valid_angles)),
+        n_valid_wedges   = int(len(valid_angles)),
+        pile_height      = round(float(pile_height), 4),
+        pile_radius      = round(float(pile_radius), 4),
+        apex             = apex,
+        base_center      = base_center,
+        ground_plane     = plane_model,
+        n_points_total   = n_total,
+        n_points_pile    = n_pile,
+        cleaned_ply_path = cleaned_ply_path,
     )
