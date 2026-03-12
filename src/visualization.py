@@ -99,8 +99,8 @@ def save_result_plot(result: AngleOfReposeResult, output_path: str) -> str:
     y = 0.86
     for label, value, color in rows:
         if label == "─":
-            ax2.axhline(
-                y=y + 0.03, xmin=0.05, xmax=0.95,
+            ax2.plot(
+                [0.05, 0.95], [y + 0.03, y + 0.03],
                 color="#444466", linewidth=0.8,
                 transform=ax2.transAxes,
             )
